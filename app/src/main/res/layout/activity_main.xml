@@ -13,12 +13,12 @@
             android:layout_height="0dp"
             android:layout_weight="4"/>
 
-    <Button
-            android:id="@+id/pictureButton"
+    <TextView
+            android:id="@+id/photoTextView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"
+            android:layout_weight="1"
             android:gravity="center"
-            android:textSize="16sp"/>
-
+            android:textSize="16sp"
+            android:text="no text"/>
 </LinearLayout>

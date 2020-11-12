@@ -2,18 +2,19 @@ package com.rekon
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.SparseArray
 import android.view.SurfaceHolder
-import android.view.SurfaceView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.vision.CameraSource
+import com.google.android.gms.vision.Detector
+import com.google.android.gms.vision.text.TextBlock
 import com.google.android.gms.vision.text.TextRecognizer
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.jar.Manifest
 
 /**
- *
+ * Face, text, object recognition using api 'Vision Mobile' from google api's
  * @author Roméo HAKANJIN
  */
 class MainActivity : AppCompatActivity() {
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         // initialize camera source with phone parameters
         cameraSource = CameraSource.Builder(this, textRecognizer)
-            .setFacing(CameraSource.CAMERA_FACING_FRONT)
+            .setFacing(CameraSource.CAMERA_FACING_BACK)
             .setAutoFocusEnabled(true)
             .setRequestedFps(3.0f)
             .build()
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder?) {
+                cameraSource.stop()
             }
 
             override fun surfaceCreated(holder: SurfaceHolder?) {
@@ -57,6 +59,23 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     // start camera
                     cameraSource.start(cameraSurfaceHolder)
+                }
+            }
+        })
+
+        textRecognizer.setProcessor(object : Detector.Processor<TextBlock> {
+            override fun release() {
+            }
+
+            override fun receiveDetections(detections: Detector.Detections<TextBlock>?) {
+                // recuperation of text detected on the camera
+                if (detections!= null) {
+                    val itemsDetected: SparseArray<TextBlock> = detections.detectedItems
+
+                    // initialize the textView from main activity with the the content of all the text elements
+                    photoTextView.text = (0 until itemsDetected.size()).joinToString("\n") { item ->
+                        itemsDetected.get(item).value
+                    }
                 }
             }
         })
